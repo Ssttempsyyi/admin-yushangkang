@@ -1,22 +1,24 @@
-import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import { defineConfig, loadEnv } from 'vite'
+import { createVitePlugins } from './build/plugin'
 import { createProxy, wrapperEnv } from './build/utils'
 // https://vitejs.dev/config/
-export default defineConfig((_command: any,mode: string)=>{
+export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode,process.cwd())
   const viteEnv = wrapperEnv(env)
-
+  const isBuild = command === 'build'
   // 这样就可以拿到定义好的环境变量了，也可以使用process.env.xxx这种方式进行访问
   const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY } = viteEnv
   return{
-     plugins: [vue()],
-     base: VITE_PUBLIC_PATH || '/',
-     resolve: {
-      // 设置路径别名
+    // 扩展setup插件
+    plugins: createVitePlugins(viteEnv, isBuild),
+    base: VITE_PUBLIC_PATH || '/',
+    resolve: {
+      // 设置别名
       alias: {
         '@': path.resolve(__dirname, 'src'),
       },
+    },
       // 设置全局css
       css: {
         preprocessorOptions: {
@@ -33,6 +35,4 @@ export default defineConfig((_command: any,mode: string)=>{
         proxy: createProxy(VITE_PROXY), // 代理
       }  
     }
-  }
- 
 })

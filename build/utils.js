@@ -1,3 +1,5 @@
+const httpsReg = /^https:\/\//
+
 export function wrapperEnv(envOptions) {
     if (!envOptions) return {}
     const rst = {}
@@ -26,12 +28,7 @@ export function wrapperEnv(envOptions) {
     }
     return rst
 }
-
-// 配置devserver 封装创建代理
-const httpsReg = /^https:\/\//
-
-// ...
-
+// 配置Proxy代理
 export function createProxy(list = []) {
     const rst = {}
     for (const [prefix, target] of list) {
